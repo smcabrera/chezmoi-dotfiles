@@ -1,0 +1,73 @@
+{
+  "inlay_hints": {
+    "enabled": true,
+    "show_type_hints": true,
+    "show_parameter_hints": true,
+    "show_other_hints": true,
+    "edit_debounce_ms": 700,
+    "scroll_debounce_ms": 50
+  },
+  "context_servers": {
+    "notion": {
+      "source": "custom",
+      "enabled": true,
+      "command": "https://mcp.notion.com/mcp",
+      "args": [],
+      "env": {}
+    }
+  },
+  "icon_theme": "VSCode Icons (Light)",
+  "agent": {
+    "default_model": {
+      "provider": "anthropic",
+      "model": "claude-sonnet-4-latest"
+    },
+    "default_profile": "write",
+    "use_modifier_to_send": false,
+    "always_allow_tool_actions": true,
+    "play_sound_when_agent_done": true
+  },
+  "vim_mode": true,
+  "theme": {
+    "mode": "system",
+    "light": "Monokai-og",
+    "dark": "Monokai-og"
+  },
+  "buffer_font_features": { "liga": true, "calt": true },
+  "buffer_font_family": "Fira Code",
+  "vim": {
+    // Optional: override or add custom keybindings here
+  },
+  "terminal": {
+    "font_family": "MesloLGS NF",
+    "font_size": 14,
+    "copy_on_select": true,
+    "keep_selection_on_copy": true
+  },
+  "show_wrap_guides": true,
+  "wrap_guides": [100],
+  "languages": {
+    "Ruby": {
+      "format_on_save": "on",
+      "formatter": {
+        "external": {
+          "command": "bundle",
+          "arguments": [
+            "exec",
+            "rubocop",
+            "--server", // speeds up Rubocop via background server
+            "--fail-level",
+            "error", // only exit non-zero on errors (not warnings)
+            "--autocorrect", // enable safe auto-correct
+            "--stdin",
+            "corrected.rb",
+            "--stderr"
+          ]
+        }
+      }
+    },
+    "Markdown": {
+      "soft_wrap": "editor_width"
+    }
+  }
+}

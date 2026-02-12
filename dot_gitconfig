@@ -1,0 +1,19 @@
+[core]
+        whitespace = -trailing-space
+	excludesfile = /Users/stephen/.gitignore_global
+[help]
+        autocorrect = 1
+[github]
+	user = smcabrera
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[user]
+	name = Stephen Mariano Cabrera
+	email = stephen@userinterviews.com
+[init]
+	defaultBranch = main
+[url "git@github.com:"]
+	insteadOf = https://github.com/

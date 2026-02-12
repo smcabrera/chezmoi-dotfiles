@@ -1,0 +1,90 @@
+# frozen_string_literal: true
+
+require 'amazing_print'
+
+# Pry.config.prompt = PryRails::RAILS_PROMPT if defined?(PryRails::RAILS_PROMPT)
+Pry.config.prompt = Pry::Prompt.new(
+  'blank',
+  'blank prompt',
+  [proc { '> ' }, proc { '>>> ' }]
+)
+
+Pry.config.editor = 'vim'
+Pry.config.pager = false
+
+if defined?(Rails) && Rails.env
+  require 'factory_bot_rails'
+  include FactoryBot::Syntax::Methods
+end
+
+# Monkey patches for Array for use in the console
+class Array
+  def self.toy(num = 10, &block)
+    block_given? ? Array.new(num, &block) : Array.new(num) { _1 + 1 }
+  end
+end
+
+# Monkey patches for Hash for use in the console
+class Hash
+  def self.toy(num = 10)
+    Hash[Array.toy(num).zip(Array.toy(num) { |c| (96 + (c + 1)).chr })]
+  end
+
+  def to_file(name = nil) = File.open("#{name || 'ruby_hash'}.yaml", 'wb') { _1.puts to_yaml }
+
+  def self.from_file(file) = File.open(file, 'r') { YAML.load(_1) }
+
+  def to_json_file(name = nil)
+    name ||= "#{SecureRandom.hex}.json"
+    json = JSON.pretty_generate(self)
+    File.open(name, 'wb') { _1.puts json }
+  end
+end
+
+def reload!
+  puts 'Reloading ...'
+  # Main project directory.
+  root_dir = File.expand_path('..', __dir__)
+  # Directories within the project that should be reloaded.
+  reload_dirs = %w[lib]
+  # Loop through and reload every file in all relevant project directories.
+  reload_dirs.each do |dir|
+    Dir.glob("#{root_dir}/#{dir}/**/*.rb").each { |f| load(f) }
+  end
+  # Return true when complete.
+  true
+end
+
+def copy_to_clipboard(text)
+  IO.popen('pbcopy', 'w') { |io| io.write(text) }
+end
+
+# Monkey patch Object
+class Object
+  def cp = IO.popen('pbcopy', 'w') { _1.write(inspect) }
+end
+
+# Monkey patch of our oauth token class to make invalidating easier
+class OauthToken < ApplicationRecord
+  def expire
+    info['credentials']['expires_at'] = 3.days.ago.to_i
+    save!
+  end
+
+  def invalidate
+    update(invalidated_at: 2.days.ago)
+  end
+end
+
+# Monkey patching String for fun and profit
+class String
+  def pp
+    JSON.parse(self).then { JSON.pretty_generate(_1) }
+  end
+
+  def pjson = JSON.parse(self).then { JSON.pretty_generate(_1) }
+end
+
+def pp_copy_to_clipboard(object)
+  IO.popen('pbcopy', 'w') { PP.pp(object, _1) }
+end

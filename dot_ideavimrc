@@ -1,0 +1,33 @@
+imap jk <esc>
+imap b.p binding.pry
+imap p.d require 'pd' ; pd
+"imap log.me .tap { |i| puts '*' * 100; puts i; puts '*' * 100 }
+
+set hlsearch    " highlight matches--Actually don't--not until I can figure out how to turn them off quickly
+set incsearch   " incremental searching
+set ignorecase  " searches are case insensitive...
+set smartcase   " ... unless they contain at least one capital letter
+
+nmap :Q :q
+nmap :X :x
+nmap :W :w
+nmap :Vs :vs
+nmap :VS :vs
+
+nnoremap <CR> :noh<CR>
+
+" Leader mappings
+let mapleader= " "
+nmap <leader>v :edit ~/.ideavimrc<CR>
+
+nnoremap <leader>x :x<CR>
+nnoremap <leader>at :tabe <cr>
+nnoremap <leader>q :q <cr>
+nnoremap <leader>l gt
+nnoremap <leader>h gT
+
+" Indent with tab in normal mode
+nmap <Tab> I<tab><esc>
+nmap <S-Tab> I<s-tab><esc>
+set clipboard=unnamedplus
+

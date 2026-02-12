@@ -1,0 +1,92 @@
+eval "$(~/.local/bin/agent shell-integration zsh)"
+# -----------------------
+# General Config
+# -----------------------
+
+setopt NO_BEEP
+unsetopt nomatch
+export EDITOR=nvim
+
+# -----------------------
+# Zinit
+# -----------------------
+
+ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+[ ! -d $ZINIT_HOME ] && mkdir -p "$(dirname $ZINIT_HOME)"
+[ ! -d $ZINIT_HOME/.git ] && git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
+source "${ZINIT_HOME}/zinit.zsh"
+
+# -----------------------
+# Starship
+# -----------------------
+
+eval "$(starship init zsh)"
+
+# -----------------------
+# Vi Mode Keybinding
+# -----------------------
+
+zinit light jeffreytse/zsh-vi-mode
+ZVM_VI_INSERT_ESCAPE_BINDKEY='jk'
+
+# -----------------------
+# History
+# -----------------------
+HISTFILE="$HOME/.zsh_history"
+HISTSIZE=100000
+SAVEHIST=100000
+
+# -----------------------
+# Environment Variables
+# -----------------------
+export GPG_TTY=$(tty)
+export COMPOSE_HTTP_TIMEOUT=180
+# export OVERCOMMIT_DISABLE=1
+export HEROKU_ORGANIZATION=user-interviews
+export RBENV_VERSION=3.4.8
+
+# -----------------------
+# Aliases
+# -----------------------
+[ -e "$HOME/.zsh/aliases.zsh" ] && source "$HOME/.zsh/aliases.zsh"
+
+# -----------------------
+# Heroku Autocomplete
+# -----------------------
+HEROKU_AC_ZSH_SETUP_PATH="$HOME/Library/Caches/heroku/autocomplete/zsh_setup"
+[[ -f $HEROKU_AC_ZSH_SETUP_PATH ]] && source "$HEROKU_AC_ZSH_SETUP_PATH"
+
+# -----------------------
+# Path Setup
+# -----------------------
+
+# This goes last because install tools always append these
+export PATH="$HOME/.bin:$HOME/bin:$HOME/.cargo/bin:$HOME/go/bin:$HOME/Dropbox/bin:$HOME/.rbenv/bin:$PATH"
+export PATH="/opt/homebrew/opt/libpq/bin:/opt/homebrew/opt/openjdk/bin:/opt/homebrew/bin:$PATH"
+export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
+export VOLTA_HOME="$HOME/.volta"
+export PATH="$VOLTA_HOME/bin:$PATH"
+export PATH=/Users/stephen/.opencode/bin:$PATH
+
+# -----------------------
+# Tool Setup
+# -----------------------
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+eval "$(/opt/homebrew/bin/brew shellenv)"
+eval "$(rbenv init - zsh)"
+eval "$(mcfly init zsh)"
+
+export PATH="$HOME/.local/bin:$PATH"
+source <(tree-me shellenv)
+
+wt() {
+  if [[ "$1" == "ls" ]]; then
+    worktree ls
+  else
+    local dir
+    dir=$(worktree "$@") && [[ -d "$dir" ]] && zed "$dir"
+  fi
+}

@@ -1,0 +1,125 @@
+"Make vim not compatible with vi--because you didn't really need that did you?
+set nocompatible
+filetype off
+
+"============================================================
+"==  Plugins: Use Vundle
+"============================================================
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+Plugin 'gmarik/Vundle.vim'
+
+"============================================================
+"==  Plugins: Sensible Defaults
+"============================================================
+" This is the easiest plugin manager to get going with, you just add new
+" plugins like you see below with the path to them in git
+" set the runtime path to include Vundle and initialize
+
+Plugin 'altercation/vim-colors-solarized'
+Plugin 'edkolev/tmuxline.vim'
+Plugin 'flazz/vim-colorschemes' " Colorschemes
+Plugin 'itchyny/lightline.vim' " This doesn't look quite as good as airline but it works without powerline fonts which is nice for chromebook
+Plugin 'kien/ctrlp.vim' "Fuzzy search (command t is another option)
+Plugin 'scrooloose/nerdcommenter' "To make commenting faster
+Plugin 'scrooloose/nerdtree' "File tree
+Plugin 'tomasr/molokai' "Colors available by bundle to be cycled through later
+Plugin 'tpope/vim-repeat' "Repeat plugins like surround
+Plugin 'tpope/vim-surround' "Surround texts with tags or quotes
+
+" Let's make sure to get the ones I use all the time:
+
+"============================================================
+"==  Plugins: Customized
+"============================================================
+Plugin 'gabrielelana/vim-markdown'
+Plugin 'mattn/webapi-vim'
+Plugin 'metakirby5/codi.vim'
+Plugin 'MarcWeber/vim-addon-mw-utils' "Gives you useful code snippets from tab
+Plugin 'airblade/vim-gitgutter'
+Plugin 'ervandew/supertab' "Autocompletes stuff in insert mode with tab
+Plugin 'garbas/vim-snipmate'
+Plugin 'godlygeek/tabular'
+Plugin 'honza/vim-snippets'
+Plugin 'mattn/gist-vim'
+Plugin 'mru.vim'
+Plugin 'myusuf3/numbers.vim'
+Plugin 'scrooloose/syntastic' "Shows you syntax errors when you save
+Plugin 'shougo/deoplete.nvim'
+Plugin 'slim-template/vim-slim'
+Plugin 'smcabrera/slimux' " Same idea as above, different plugin
+Plugin 'tomtom/tlib_vim' " For snippets
+Plugin 'tpope/vim-endwise' "Ends certain structures automatically--like 'end' in ruby
+Plugin 'tpope/vim-haml'
+Plugin 'tpope/vim-rails' "Rails.vim: incredibly useful plugin for working with rails code
+Plugin 'tpope/vim-unimpaired'
+Plugin 'vim-ruby/vim-ruby' "Among other things, these bundles add files to the load path so that you can use gf for jumping between files
+Plugin 'ThePrimeagen/harpoon'
+Plugin 'nvim-telescope/telescope'
+Plugin 'elixir-lang/vim-elixir'
+Plugin 'vim-scripts/SyntaxRange'
+
+call vundle#end()            " required
+filetype plugin indent on    " required
+
+"============================================================
+"==  Colorscheme: Solarized
+"============================================================
+" Many people like solarized and it seems like a better default then vim's
+
+syntax enable
+set background=dark
+"colorscheme solarized
+colorscheme molokai
+
+"============================================================
+"==  Essential Settings
+"============================================================
+  " Very important first thing
+  " Make escape easier:
+  imap jk <ESC>
+
+  " Fix Splits
+  nnoremap <C-J> <C-W><C-J>
+  nnoremap <C-K> <C-W><C-K>
+  nnoremap <C-L> <C-W><C-L>
+  nnoremap <C-H> <C-W><C-H>
+
+  " Make spaces when you press tab
+  set softtabstop=2 shiftwidth=2 expandtab
+
+  " These go with the numbers plugin
+  set nu
+  set norelativenumber
+
+
+ " Pretty sweet mapping that I learned about from Destroy all Software
+   cnoremap %. <C-R>=('%')<cr>
+   cnoremap %% <C-R>=expand('%:h').'/'<cr>
+   cnoremap %%% <C-R>=expand('%')<cr>
+
+"============================================================
+"==  Leader Mappings
+"============================================================
+  let mapleader= " "
+
+  " Always let me open vimrc in a new tab whenever I want to
+  nmap <leader>v :edit ~/.vimrc<CR>
+  nnoremap <leader>n :NERDTreeToggle<CR>
+
+  nmap <leader>1 :source ~/.vimrc<CR>
+  nmap <leader>2 :PluginInstall<CR>
+
+"============================================================
+"==  My customizations
+"============================================================
+  nnoremap <leader>w :w<CR>
+  nnoremap <leader>x :x<CR>
+  nnoremap <leader>at :tabe <cr>
+  nnoremap <leader>q :q <cr>
+  nnoremap <leader>l gt
+  nnoremap <leader>h gT
+  nnoremap <leader>m :MRU
+  nnoremap <leader>p :CtrlP <cr>
+
+  imap b.p require 'pry'; binding.pry

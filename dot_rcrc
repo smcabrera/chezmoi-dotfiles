@@ -1,0 +1,3 @@
+EXCLUDES="install.sh"
+SYMLINK_DIRS="bundle"
+
