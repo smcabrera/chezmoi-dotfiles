@@ -43,10 +43,47 @@ You can also use the full repository URL:
 chezmoi init --apply https://github.com/smcabrera/chezmoi-dotfiles.git
 ```
 
+## Secrets Management
+
+Secret files (SSH keys, API keys, credential files) are encrypted at rest using [age](https://age-encryption.org/) and stored as `.age` files in the repository.
+
+### Encrypted files
+
+| File | Source |
+|------|--------|
+| `~/.ssh/id_ed25519` | `private_dot_ssh/encrypted_private_id_ed25519.age` |
+| `~/.ssh/id_rsa` | `private_dot_ssh/encrypted_private_id_rsa.age` |
+| `~/.anthropic-api-key` | `encrypted_dot_anthropic-api-key.age` |
+| `~/.netrc` | `encrypted_private_dot_netrc.age` |
+| `~/.config/gh/hosts.yml` | `dot_config/gh/encrypted_private_hosts.yml.age` |
+| `~/.config/graphite/user_config` | `dot_config/graphite/encrypted_private_user_config.age` |
+
+### New machine setup
+
+The age private key is **not** in the repository — you must copy it over separately before `chezmoi apply` will work:
+
+```bash
+# Copy key.txt from a secure location (e.g. USB drive, another machine) to:
+~/.config/chezmoi/key.txt
+```
+
+Then the normal `chezmoi apply` will decrypt files automatically.
+
+### Adding a new secret file
+
+```bash
+chezmoi add --encrypt ~/.config/someapp/credentials.json
+```
+
+### 1Password (env vars)
+
+Shell secrets exported as environment variables are injected via 1Password templates in `dot_zshrc.tmpl`. See the chezmoi-secrets skill for how to add or update these.
+
 ## Prerequisites
 
 - Git (for cloning the repository)
 - curl (for the installation script)
+- age (`brew install age`) — required to decrypt secret files
 
 ## Daily Operations
 

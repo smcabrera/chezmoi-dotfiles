@@ -1,0 +1,16 @@
+default: &default
+  adapter: sqlite3
+  pool: 5
+  timeout: 5000
+
+development:
+  <<: *default
+  database: <%= File.expand_path('~/.local/share/pantry-manager/pantry.db') %>
+
+test:
+  <<: *default
+  database: db/test.sqlite3
+
+production:
+  <<: *default
+  database: <%= File.expand_path('~/.local/share/pantry-manager/pantry.db') %>

@@ -1,6 +1,7 @@
 require 'nokogiri'
 require 'json'
 require 'faraday'
+require 'faraday/follow_redirects'
 
 module PantryManager
   module Parsers
@@ -11,7 +12,10 @@ module PantryManager
       end
 
       def self.parse(url)
-        conn = Faraday.new
+        conn = Faraday.new do |f|
+          f.response :follow_redirects
+          f.headers['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+        end
         response = conn.get(url)
         html = response.body
         doc = Nokogiri::HTML(html)
@@ -23,10 +27,23 @@ module PantryManager
           begin
             data = JSON.parse(script.content)
 
+            # Handle @graph structure (common in JSON-LD)
+            if data['@graph']
+              data = data['@graph']
+            end
+
             # Handle array or single object
             data = [data] unless data.is_a?(Array)
 
-            recipe_data = data.find { |item| item['@type'] == 'Recipe' }
+            # Find recipe - @type can be a string or array of strings
+            recipe_data = data.find do |item|
+              type = item['@type']
+              if type.is_a?(Array)
+                type.include?('Recipe')
+              else
+                type == 'Recipe'
+              end
+            end
             next unless recipe_data
 
             return {

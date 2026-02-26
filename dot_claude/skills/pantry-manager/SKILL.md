@@ -1,136 +1,101 @@
 ---
-name: pantry
-description: Manage pantry inventory and plan meals with maximum ingredient reuse
+name: pantry-manager
+description: Manage pantry inventory and plan meals with maximum ingredient reuse. Use when managing ingredients, searching recipes, or planning meals.
+argument-hint: "[command] [arguments]"
+allowed-tools: Bash
 ---
 
-# Pantry Manager Skill
+# Pantry Manager
 
-You are helping the user manage their pantry and plan meals with maximum ingredient reuse.
+Your personal meal planning assistant. I help you manage your pantry inventory, import recipes, and plan meals that maximize ingredient reuse.
 
-## ⚠️ IMPORTANT: Legal Disclaimer
+## Quick Start
 
-**NYT Cooking Import**: This tool can import recipes from NYT Cooking for **personal, non-commercial use only**.
-- NYT's Terms of Service prohibit automated scraping without permission
-- You are using this tool at your own discretion for personal meal planning
-- Do NOT use this tool to build a commercial recipe database
-- Do NOT distribute imported recipe data
-- If you plan to make this tool public or use it commercially, you MUST obtain permission from The New York Times first
+When you invoke this skill, I'll help you:
+- **Add ingredients** to your pantry with quantities and units
+- **View your pantry** to see what you have on hand
+- **Search recipes** from your imported collection
+- **Plan meals** that efficiently reuse ingredients
+- **Import recipes** from NYT Cooking, Budget Bytes, and other sites
 
-**Rate Limiting**: NYT imports are limited to one recipe at a time with a 2-second delay to be respectful of their servers.
+## How It Works
 
-## Setup
-
-When this skill is first invoked, load the required libraries:
-
-```ruby
-require_relative 'lib/database'
-require_relative 'lib/models'
-require_relative 'lib/cli'
-
-# Initialize database connection
-PantryManager::Database.connection
+This skill uses the `pantry-manager` CLI tool located at:
+```
+/Users/stephen/.claude/skills/pantry-manager/bin/pantry-manager
 ```
 
-## Available Commands:
-
-**Pantry Management:**
-- `/pantry add <ingredient> <quantity> <unit>` - Add ingredient to pantry (e.g., "red onion" "1" "whole")
-- `/pantry list` - Show current pantry state
-- `/pantry remove <ingredient>` - Remove ingredient from pantry
-
-**Recipe Management:**
-- `/pantry recipes` - List all imported recipes
-- `/pantry recipe <id>` - Show recipe details
-- `/pantry favorite <recipe_id>` - Mark recipe as favorite (Phase 4)
-
-**Recipe Import (Phase 2):**
-- `/pantry import <url>` - Import recipe from URL (one at a time, 2-second rate limit)
-
-**Recipe Search (Phase 3):**
-- `/pantry search <query>` - Search local recipes
-
-**Meal Planning (Phase 4):**
-- `/pantry plan <N>` - Generate N-meal plan optimizing ingredient reuse
-
-## Database Location:
-`~/.local/share/pantry-manager/pantry.db`
-
-## Implementation Notes:
-
-### For `/pantry add`:
-```ruby
-ingredient_name = args[0]
-quantity = args[1]
-unit = args[2]
-PantryManager::PantryItem.add(ingredient_name, quantity, unit)
-puts "Added #{quantity} #{unit} #{ingredient_name} to pantry."
+All commands are executed through this CLI, which maintains your pantry database at:
+```
+~/.local/share/pantry-manager/pantry.db
 ```
 
-### For `/pantry list`:
-```ruby
-items = PantryManager::PantryItem.all
-puts PantryManager::CLI.format_pantry_list(items)
+## Available Commands
+
+### Pantry Management
+- `add <ingredient> <quantity> <unit> [notes]` - Add ingredient to pantry
+- `list` - Show current pantry state
+- `remove <ingredient>` - Remove ingredient from pantry
+
+### Recipe Management
+- `recipes` - List all imported recipes
+- `recipe <id>` - Show detailed recipe information
+- `import <url>` - Import recipe from URL (NYT Cooking, Budget Bytes, etc.)
+- `search <query>` - Search recipes by title or ingredients
+- `favorite <recipe_id> [rating] [notes]` - Mark recipe as favorite
+
+### Meal Planning
+- `plan <N>` - Generate N-meal plan optimizing ingredient reuse
+- `help` - Show all available commands
+
+For detailed command documentation, see [COMMANDS.md](COMMANDS.md).
+
+## Implementation
+
+When handling user requests, I will:
+
+1. **Parse the command** - Extract the command and arguments from the user's request
+2. **Execute via CLI** - Run the appropriate `bin/pantry-manager` command using the Bash tool
+3. **Format the output** - Present results in a friendly, conversational way
+4. **Suggest next steps** - Help the user understand what they can do next
+
+### Example Implementations
+
+**Adding ingredients:**
+```bash
+/Users/stephen/.claude/skills/pantry-manager/bin/pantry-manager add "red onion" 2 whole
 ```
 
-### For `/pantry remove`:
-```ruby
-ingredient_name = args[0]
-if PantryManager::PantryItem.remove(ingredient_name)
-  puts "Removed #{ingredient_name} from pantry."
-else
-  puts "#{ingredient_name} not found in pantry."
-end
+**Listing pantry:**
+```bash
+/Users/stephen/.claude/skills/pantry-manager/bin/pantry-manager list
 ```
 
-### For `/pantry recipes`:
-```ruby
-recipes = PantryManager::Recipe.all
-puts PantryManager::CLI.format_recipe_list(recipes)
+**Searching recipes:**
+```bash
+/Users/stephen/.claude/skills/pantry-manager/bin/pantry-manager search chicken
 ```
 
-### For `/pantry recipe`:
-```ruby
-recipe_id = args[0]
-recipe = PantryManager::Recipe.find(recipe_id)
-if recipe
-  puts PantryManager::CLI.format_recipe_details(recipe)
-else
-  puts "Recipe not found."
-end
+**Planning meals:**
+```bash
+/Users/stephen/.claude/skills/pantry-manager/bin/pantry-manager plan 3
 ```
 
-### For `/pantry import`:
-```ruby
-require_relative 'lib/recipe_importer'
-
-url = args[0]
-puts "Importing recipe from #{url}..."
-puts "(2-second rate limit for respectful access)"
-puts "⚠️  Personal use only - do not distribute recipe data"
-puts
-
-result = PantryManager::RecipeImporter.import(url)
-
-if result[:success]
-  puts "✅ Successfully imported: #{result[:title]}"
-  puts "   Recipe ID: #{result[:recipe_id]}"
-  puts "   Ingredients: #{result[:ingredient_count]}"
-  puts "   Parser: #{result[:parser]}"
-else
-  puts "❌ Import failed: #{result[:error]}"
-end
+**Importing recipes:**
+```bash
+/Users/stephen/.claude/skills/pantry-manager/bin/pantry-manager import "https://cooking.nytimes.com/recipes/1015987-classic-marinara-sauce"
 ```
 
 ## Response Style
 
-Be conversational and helpful. When showing pantry items or recipes, explain what the user has and suggest what they could make with those ingredients (once search/planning is implemented).
+Be conversational and helpful:
+- When showing pantry items, suggest what the user could make
+- When importing recipes, remind about personal use only
+- When planning meals, emphasize ingredient reuse and explain why recipes work well together
+- Show shopping lists clearly (what to buy vs what they have)
 
-For recipe import (Phase 2+), remind users:
-- Only one recipe at a time (no batch imports)
-- Show rate limiting message: "Importing recipe... (2-second rate limit for respectful access)"
-- Remind this is for personal use only
+## Legal Notice
 
-For meal planning (Phase 4+), emphasize ingredient reuse:
-- Highlight shared ingredients across selected recipes
-- Explain why recipes work well together
-- Show shopping list clearly (what to buy vs what you have)
+**NYT Cooking Import**: For personal, non-commercial use only. See [LICENSE.md](LICENSE.md) for complete terms.
+
+**Rate Limiting**: Recipe imports are limited to one at a time with a 2-second delay to be respectful of servers.

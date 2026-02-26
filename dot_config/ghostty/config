@@ -1,0 +1,11 @@
+window-decoration=true
+font-family="JetBrainsMono NF"
+font-size=14
+window-padding-x=20
+window-padding-y=20
+shell-integration-features=no-cursor
+cursor-style=block
+cursor-style-blink=false
+confirm-close-surface=false
+theme = dark:Builtin Solarized Dark,light:Builtin Solarized Light
+copy-on-select=true

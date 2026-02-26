@@ -24,58 +24,99 @@ module PantryManager
             break
           end
         rescue => e
-          # Continue to next parser if this one fails
           next
         end
       end
 
       return { error: "Could not parse recipe from #{url}" } unless recipe_data
 
-      # Store in database
-      db = Database.connection
-
       # Check if recipe already exists
-      existing = db.execute("SELECT id FROM recipes WHERE source_url = ?", [url]).first
-      return { error: "Recipe already imported", recipe_id: existing['id'] } if existing
+      existing = PantryManager::Recipe.find_by(source_url: url)
+      return { error: "Recipe already imported", recipe_id: existing.id } if existing
 
-      # Insert recipe
-      db.execute(
-        "INSERT INTO recipes (source_url, title, yield_text, total_time, raw_data) VALUES (?, ?, ?, ?, ?)",
-        [recipe_data[:source_url], recipe_data[:title], recipe_data[:yield],
-         recipe_data[:total_time], recipe_data[:raw_data]]
-      )
-      recipe_id = db.last_insert_row_id
-
-      # Parse and store ingredients
+      # Create recipe with ingredients in a transaction
+      recipe = nil
       ingredient_count = 0
-      recipe_data[:ingredients].each do |ing_text|
-        parsed = IngredientParser.parse(ing_text)
 
-        # Skip if no ingredient name extracted
-        next if parsed[:name].empty?
-
-        # Get or create ingredient
-        ing_row = db.execute("SELECT id FROM ingredients WHERE name = ?", [parsed[:name]]).first
-        unless ing_row
-          db.execute("INSERT INTO ingredients (name) VALUES (?)", [parsed[:name]])
-          ing_row = { 'id' => db.last_insert_row_id }
-        end
-
-        # Link to recipe
-        db.execute(
-          "INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity, unit, original_text) VALUES (?, ?, ?, ?, ?)",
-          [recipe_id, ing_row['id'], parsed[:quantity], parsed[:unit], parsed[:original]]
+      ActiveRecord::Base.transaction do
+        recipe = PantryManager::Recipe.create!(
+          source_url: recipe_data[:source_url],
+          title: recipe_data[:title],
+          yield_text: recipe_data[:yield],
+          total_time: recipe_data[:total_time],
+          raw_data: recipe_data[:raw_data]
         )
-        ingredient_count += 1
+
+        # Parse and store ingredients
+        recipe_data[:ingredients].each do |ing_text|
+          parsed = IngredientParser.parse(ing_text)
+          next if parsed[:name].empty?
+
+          ingredient = PantryManager::Ingredient.find_or_create_by!(name: parsed[:name])
+          
+          PantryManager::RecipeIngredient.create!(
+            recipe: recipe,
+            ingredient: ingredient,
+            quantity: parsed[:quantity],
+            unit: parsed[:unit],
+            original_text: parsed[:original]
+          )
+          
+          ingredient_count += 1
+        end
       end
 
       {
         success: true,
-        recipe_id: recipe_id,
-        title: recipe_data[:title],
+        recipe_id: recipe.id,
+        title: recipe.title,
         ingredient_count: ingredient_count,
         parser: parser_used
       }
+    rescue ActiveRecord::RecordInvalid => e
+      { error: "Validation failed: #{e.message}" }
+    end
+
+    def self.from_spoonacular(spoonacular_id)
+      details = SpoonacularClient.get_recipe_details(spoonacular_id)
+      return { error: "Recipe not found on Spoonacular" } unless details
+
+      source_url = details['sourceUrl'] || "https://spoonacular.com/recipes/#{spoonacular_id}"
+
+      existing = PantryManager::Recipe.find_by(source_url: source_url)
+      return { error: "Recipe already imported", recipe_id: existing.id } if existing
+
+      recipe = nil
+      ingredient_count = 0
+
+      ActiveRecord::Base.transaction do
+        recipe = PantryManager::Recipe.create!(
+          source_url: source_url,
+          title: details['title'],
+          yield_text: "#{details['servings']} servings",
+          total_time: details['readyInMinutes'] ? "#{details['readyInMinutes']} minutes" : nil,
+          raw_data: details.to_json
+        )
+
+        (details['extendedIngredients'] || []).each do |ing|
+          parsed = IngredientParser.parse(ing['original'])
+          next if parsed[:name].empty?
+
+          ingredient = PantryManager::Ingredient.find_or_create_by!(name: parsed[:name])
+          PantryManager::RecipeIngredient.create!(
+            recipe: recipe,
+            ingredient: ingredient,
+            quantity: parsed[:quantity],
+            unit: parsed[:unit],
+            original_text: parsed[:original]
+          )
+          ingredient_count += 1
+        end
+      end
+
+      { success: true, recipe_id: recipe.id, title: recipe.title, ingredient_count: ingredient_count, parser: 'spoonacular' }
+    rescue ActiveRecord::RecordInvalid => e
+      { error: "Validation failed: #{e.message}" }
     end
   end
 end

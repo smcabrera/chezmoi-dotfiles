@@ -1,6 +1,7 @@
 require 'nokogiri'
 require 'json'
 require 'faraday'
+require 'faraday/follow_redirects'
 
 module PantryManager
   module Parsers
@@ -18,7 +19,9 @@ module PantryManager
         enforce_rate_limit
 
         # Fetch HTML with standard user agent (not anthropic-ai)
+        # Enable redirect following
         conn = Faraday.new do |f|
+          f.response :follow_redirects
           f.headers['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (personal use)'
         end
 
