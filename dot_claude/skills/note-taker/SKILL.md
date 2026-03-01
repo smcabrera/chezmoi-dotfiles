@@ -14,7 +14,7 @@ The user has expressed intent to write something down. Capture the content and p
 ## Steps
 
 1. **Identify the content** — what does the user want noted? If no content is discernible, ask: "What would you like me to note down?"
-2. **Infer a filename** — derive a short, descriptive kebab-case name from the subject (e.g. `goatbot-auth-ideas.md`, `meeting-with-alex.md`, `rust-learning.md`). 2-5 words, no date prefix.
+2. **Infer a filename** — derive a short, descriptive sentence-case name from the subject (e.g. `Goatbot auth ideas.md`, `Meeting with alex.md`, `Rust learning.md`). 2-5 words, no date prefix. Whitespace is welcome
 3. **Check for existing file** — use Glob to look for `/Users/stephen/Dropbox/GoatBot/notes/<filename>.md`
 4. **Write or append:**
    - **New file:** Use Write tool to create the file
@@ -25,7 +25,6 @@ The user has expressed intent to write something down. Capture the content and p
 
 ### New file
 ```markdown
-# Topic Title
 
 Content here...
 

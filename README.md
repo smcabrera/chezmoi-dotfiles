@@ -141,6 +141,23 @@ This repository manages configuration files for:
 - ASDF version manager
 - And more...
 
+## Services / LaunchAgents
+
+### Zellij Theme Auto-Switching (dark-notify)
+
+A launchd agent (`local.zellij-theme`) runs `dark-notify` on login to automatically switch Zellij between `solarized-dark` and `solarized-light` themes when macOS appearance changes.
+
+- **Agent plist**: `~/Library/LaunchAgents/local.zellij-theme.plist`
+- **Toggle script**: `~/.config/zellij/toggle-theme.sh`
+- **Dependency**: `dark-notify` — install via `brew install cormacrelf/tap/dark-notify`
+
+If setting up on a new machine, install dark-notify and load the agent:
+
+```bash
+brew install cormacrelf/tap/dark-notify
+launchctl load ~/Library/LaunchAgents/local.zellij-theme.plist
+```
+
 ## GoatBot Dev Workflows
 
 A set of Claude Code slash commands for managing software projects from idea to implementation. Commands live in `~/.claude/commands/workflows/`.

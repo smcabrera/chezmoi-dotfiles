@@ -58,6 +58,36 @@
     "claude-code-setup@claude-plugins-official": true,
     "slack@claude-plugins-official": true
   },
+  "trustedDirectories": ["/Users/stephen"],
   "effortLevel": "medium",
-  "skipDangerousModePermissionPrompt": true
+  "skipDangerousModePermissionPrompt": true,
+  "permissions": {
+    "allow": [
+      "Bash(git *)",
+      "Bash(npm *)",
+      "Bash(npx *)",
+      "Bash(node *)",
+      "Bash(ruby *)",
+      "Bash(bundle *)",
+      "Bash(rspec *)",
+      "Bash(pytest *)",
+      "Bash(python *)",
+      "Bash(brew *)",
+      "Bash(ls *)",
+      "Bash(cat *)",
+      "Bash(grep *)",
+      "Bash(find *)",
+      "Bash(jira *)",
+      "Bash(jira issue list -a$(jira me) *)",
+      "Bash(gh *)"
+    ],
+    "deny": [
+      "Bash(git push --force *)",
+      "Bash(rm -rf *)",
+      "Bash(sudo *)",
+      "Bash(chmod 777 *)",
+      "Bash(curl * | bash *)",
+      "Bash(git reset --hard *)"
+    ]
+  }
 }
