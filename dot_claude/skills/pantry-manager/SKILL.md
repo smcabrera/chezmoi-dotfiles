@@ -1,101 +1,84 @@
 ---
 name: pantry-manager
 description: Manage pantry inventory and plan meals with maximum ingredient reuse. Use when managing ingredients, searching recipes, or planning meals.
-argument-hint: "[command] [arguments]"
-allowed-tools: Bash
+argument-hint: "[what you want to do]"
+allowed-tools: Bash, Read, Edit, Write, Glob, Grep
 ---
 
 # Pantry Manager
 
-Your personal meal planning assistant. I help you manage your pantry inventory, import recipes, and plan meals that maximize ingredient reuse.
+Manage pantry inventory, recipes, and meal plans using markdown files.
 
-## Quick Start
+## Data Location
 
-When you invoke this skill, I'll help you:
-- **Add ingredients** to your pantry with quantities and units
-- **View your pantry** to see what you have on hand
-- **Search recipes** from your imported collection
-- **Plan meals** that efficiently reuse ingredients
-- **Import recipes** from NYT Cooking, Budget Bytes, and other sites
+All data lives in `~/Dropbox/GoatBot/cooking/`:
 
-## How It Works
+- `pantry.md` — Current pantry inventory
+- `shopping-list.md` — Shopping checklist
+- `recipes/` — One markdown file per recipe
+- `meal-plans/` — Generated meal plans
 
-This skill uses the `pantry-manager` CLI tool located at:
-```
-/Users/stephen/.claude/skills/pantry-manager/bin/pantry-manager
-```
+## Operations
 
-All commands are executed through this CLI, which maintains your pantry database at:
-```
-~/.local/share/pantry-manager/pantry.db
-```
+### Add to Pantry
+Read `pantry.md`, find the right category section, add the ingredient line.
+Format: `- <ingredient>: <quantity> <unit>` or `- <ingredient>` for staples.
+If no matching category exists, create one.
 
-## Available Commands
+### View Pantry
+Read and display `pantry.md`.
 
-### Pantry Management
-- `add <ingredient> <quantity> <unit> [notes]` - Add ingredient to pantry
-- `list` - Show current pantry state
-- `remove <ingredient>` - Remove ingredient from pantry
+### Remove from Pantry
+Read `pantry.md`, find and remove the ingredient line.
 
-### Recipe Management
-- `recipes` - List all imported recipes
-- `recipe <id>` - Show detailed recipe information
-- `import <url>` - Import recipe from URL (NYT Cooking, Budget Bytes, etc.)
-- `search <query>` - Search recipes by title or ingredients
-- `favorite <recipe_id> [rating] [notes]` - Mark recipe as favorite
+### Import Recipe
+Run: `ruby ~/.claude/skills/pantry-manager/bin/import-recipe "<url>"`
+This creates a markdown file in `recipes/`.
+Remind user: personal, non-commercial use only for NYT recipes.
 
-### Meal Planning
-- `plan <N>` - Generate N-meal plan optimizing ingredient reuse
-- `help` - Show all available commands
+### Search Recipes
+First search locally: use Grep to search `recipes/*.md` for ingredients or titles.
+If local search has no good results, search Spoonacular by ingredients:
+Run: `ruby ~/.claude/skills/pantry-manager/bin/search-recipes <ingredient1> <ingredient2> ...`
+This outputs tab-separated results: `<id>\t<title>\t(uses X of yours, needs Y more)`
+Present results to the user. When they pick one, import it with `import-spoonacular`.
 
-For detailed command documentation, see [COMMANDS.md](COMMANDS.md).
+### Find New Recipes
+Search Spoonacular for recipes matching the user's pantry or requested ingredients:
+Run: `ruby ~/.claude/skills/pantry-manager/bin/search-recipes <ingredients>`
+Present results with title and ingredient match info. When the user picks one:
+Run: `ruby ~/.claude/skills/pantry-manager/bin/import-spoonacular <id>`
+This fetches full recipe details and writes a markdown file to `recipes/`.
 
-## Implementation
+### Plan Meals
+1. Read `pantry.md` to get available ingredients
+2. Read all recipe files (Glob `recipes/*.md`, Read each)
+3. For each recipe, extract the ingredients list
+4. Select N recipes that:
+   - Use pantry ingredients as much as possible
+   - Share ingredients with each other
+   - Provide variety
+5. Write meal plan to `meal-plans/<date>.md`
+6. Generate shopping list: ingredients needed minus pantry
+7. Write or update `shopping-list.md`
 
-When handling user requests, I will:
+### Shopping List
+Read `shopping-list.md`. Can also:
+- Add items manually
+- Check off items (change `- [ ]` to `- [x]`)
+- Move checked items to pantry (edit both files)
 
-1. **Parse the command** - Extract the command and arguments from the user's request
-2. **Execute via CLI** - Run the appropriate `bin/pantry-manager` command using the Bash tool
-3. **Format the output** - Present results in a friendly, conversational way
-4. **Suggest next steps** - Help the user understand what they can do next
-
-### Example Implementations
-
-**Adding ingredients:**
-```bash
-/Users/stephen/.claude/skills/pantry-manager/bin/pantry-manager add "red onion" 2 whole
-```
-
-**Listing pantry:**
-```bash
-/Users/stephen/.claude/skills/pantry-manager/bin/pantry-manager list
-```
-
-**Searching recipes:**
-```bash
-/Users/stephen/.claude/skills/pantry-manager/bin/pantry-manager search chicken
-```
-
-**Planning meals:**
-```bash
-/Users/stephen/.claude/skills/pantry-manager/bin/pantry-manager plan 3
-```
-
-**Importing recipes:**
-```bash
-/Users/stephen/.claude/skills/pantry-manager/bin/pantry-manager import "https://cooking.nytimes.com/recipes/1015987-classic-marinara-sauce"
-```
+### Buy (Move Shopping -> Pantry)
+Read `shopping-list.md`, find checked items, add them to `pantry.md`,
+remove them from shopping list.
 
 ## Response Style
 
-Be conversational and helpful:
-- When showing pantry items, suggest what the user could make
-- When importing recipes, remind about personal use only
-- When planning meals, emphasize ingredient reuse and explain why recipes work well together
-- Show shopping lists clearly (what to buy vs what they have)
+Be conversational. When showing pantry, suggest what could be made.
+When planning meals, explain ingredient reuse reasoning.
+When showing shopping list, group by store section if possible.
 
 ## Legal Notice
 
-**NYT Cooking Import**: For personal, non-commercial use only. See [LICENSE.md](LICENSE.md) for complete terms.
-
-**Rate Limiting**: Recipe imports are limited to one at a time with a 2-second delay to be respectful of servers.
+NYT Cooking imports are for personal, non-commercial use only.
+One recipe at a time, with rate limiting.

@@ -28,7 +28,7 @@ module PantryManager
             data = JSON.parse(script.content)
 
             # Handle @graph structure (common in JSON-LD)
-            if data['@graph']
+            if data.is_a?(Hash) && data['@graph']
               data = data['@graph']
             end
 

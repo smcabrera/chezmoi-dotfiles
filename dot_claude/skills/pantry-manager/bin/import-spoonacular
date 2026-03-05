@@ -1,0 +1,73 @@
+#!/usr/bin/env ruby
+require 'cgi'
+require_relative '../lib/spoonacular_client'
+require_relative '../lib/ingredient_parser'
+
+id = ARGV[0]
+abort "Usage: import-spoonacular <spoonacular-id>" unless id
+
+details = PantryManager::SpoonacularClient.get_recipe_details(id)
+abort "Could not fetch recipe #{id} from Spoonacular" unless details
+
+title = CGI.unescapeHTML(details['title'] || '')
+slug = title.downcase.gsub(/[^a-z0-9]+/, '-').gsub(/^-|-$/, '')
+output_dir = File.expand_path('~/Dropbox/GoatBot/cooking/recipes')
+output_path = File.join(output_dir, "#{slug}.md")
+
+if File.exist?(output_path)
+  abort "Recipe already exists: #{output_path}"
+end
+
+# Extract ingredients
+ingredients = (details['extendedIngredients'] || []).map { |i| CGI.unescapeHTML(i['original'] || '') }
+
+# Extract steps
+instructions = details['analyzedInstructions'] || []
+steps = instructions.flat_map { |group| (group['steps'] || []).map { |s| CGI.unescapeHTML(s['step'] || '') } }
+
+# If no analyzed instructions, fall back to raw instructions text
+if steps.empty? && details['instructions']
+  steps = CGI.unescapeHTML(details['instructions']).split(/\n+/).reject(&:empty?)
+end
+
+# Normalize ingredient names for frontmatter
+normalized_ingredients = ingredients.map do |ing_text|
+  parsed = PantryManager::IngredientParser.parse(ing_text)
+  parsed[:name]
+end.reject(&:empty?).uniq
+
+# Build markdown
+today = Time.now.strftime('%Y-%m-%d')
+source_url = details['sourceUrl'] || "https://spoonacular.com/recipes/#{slug}-#{id}"
+recipe_yield = details['servings'] ? "#{details['servings']} servings" : nil
+total_time = details['readyInMinutes'] ? "#{details['readyInMinutes']} minutes" : nil
+
+fm_ingredients = normalized_ingredients.map { |i| "  - #{i}" }.join("\n")
+body_ingredients = ingredients.map { |i| "- #{i}" }.join("\n")
+body_steps = steps.each_with_index.map { |s, i| "#{i + 1}. #{s}" }.join("\n")
+
+markdown = <<~MD
+  ---
+  source: #{source_url}
+  yield: #{recipe_yield}
+  time: #{total_time}
+  imported: #{today}
+  ingredients:
+  #{fm_ingredients}
+  ---
+
+  # #{title}
+
+  ## Ingredients
+
+  #{body_ingredients}
+
+  ## Instructions
+
+  #{body_steps}
+MD
+
+File.write(output_path, markdown.gsub(/^  /, ''))
+puts "Imported: #{title}"
+puts "File: #{output_path}"
+puts "Ingredients: #{ingredients.length}"

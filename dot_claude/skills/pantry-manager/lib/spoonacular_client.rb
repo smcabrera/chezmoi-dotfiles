@@ -34,29 +34,6 @@ module PantryManager
       []
     end
 
-    def self.search_by_query(query, number: 10)
-      return [] unless api_key
-
-      conn = Faraday.new(url: BASE_URL) do |f|
-        f.response :follow_redirects
-      end
-
-      response = conn.get('/recipes/complexSearch') do |req|
-        req.params['apiKey'] = api_key
-        req.params['query'] = query
-        req.params['number'] = number
-      end
-
-      return [] unless response.success?
-
-      JSON.parse(response.body).fetch('results', []).map do |recipe|
-        { id: recipe['id'], title: recipe['title'], source: 'spoonacular' }
-      end
-    rescue => e
-      puts "Spoonacular API error: #{e.message}"
-      []
-    end
-
     def self.get_recipe_details(id)
       return nil unless api_key
 
