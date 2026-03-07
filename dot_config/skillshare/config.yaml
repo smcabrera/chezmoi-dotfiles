@@ -1,0 +1,11 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/runkids/skillshare/main/schemas/config.schema.json
+source: /Users/stephen/Code/agent-skills
+mode: merge
+targets:
+    pi:
+        path: /Users/stephen/.pi/agent/skills
+ignore:
+    - '**/.DS_Store'
+    - '**/.git/**'
+audit:
+    block_threshold: CRITICAL
