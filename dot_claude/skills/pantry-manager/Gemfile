@@ -1,5 +1,0 @@
-source 'https://rubygems.org'
-
-gem 'nokogiri', '~> 1.16'
-gem 'faraday', '~> 2.9'
-gem 'faraday-follow_redirects', '~> 0.3'

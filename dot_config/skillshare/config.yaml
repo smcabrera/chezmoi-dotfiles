@@ -4,6 +4,8 @@ mode: merge
 targets:
     pi:
         path: /Users/stephen/.pi/agent/skills
+    claude-code:
+        path: /Users/stephen/.claude/skills
 ignore:
     - '**/.DS_Store'
     - '**/.git/**'
