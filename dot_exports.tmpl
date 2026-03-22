@@ -1,0 +1,15 @@
+# -----------------------
+# Environment Variables
+# -----------------------
+export EDITOR=nvim
+export COMPOSE_HTTP_TIMEOUT=180
+export HEROKU_ORGANIZATION=user-interviews
+export RBENV_VERSION=3.4.8
+export ANTHROPIC_API_KEY="{{ onepasswordRead "op://Shared/Anthropic/26myhig3sfz5qtrbn6ywxudx4q" "my.1password.com" }}"
+export JIRA_API_TOKEN="{{ onepasswordRead "op://Stephen/Atlassian/alj4y6gtzqpauibbvuwcfneakm" "my.1password.com" }}"
+export HEVY_API_KEY="{{ onepasswordRead "op://Stephen/Hevy/HEVY_API_KEY" "my.1password.com" }}"
+export SPOONACULAR_API_KEY="$(cat $HOME/.spoonacular-api-key)"
+export GROCY_API_KEY="{{ onepasswordRead "op://Stephen/Grocy/add more/API Key" "my.1password.com" }}"
+export GROCY_BASE_URL="{{ (index (onepassword "Grocy" "" "my.1password.com").urls 0).href }}/api"
+export ANYLIST_EMAIL="stephen.m.cabrera@gmail.com"
+export ANYLIST_PASSWORD="{{ onepasswordRead "op://Shared/AnyList/password" "my.1password.com" }}"
