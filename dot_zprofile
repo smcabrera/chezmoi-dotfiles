@@ -1,5 +1,7 @@
 
 
+[[ -f "$HOME/.profile" ]] && source "$HOME/.profile"
+
 # Added by Toolbox App
 export PATH="$PATH:/Users/stephen/Library/Application Support/JetBrains/Toolbox/scripts"
 
