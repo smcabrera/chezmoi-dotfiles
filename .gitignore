@@ -1,3 +1,4 @@
 .DS_Store
 *.mdb
 *.lock.mdb
+key.txt
