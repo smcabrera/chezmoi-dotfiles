@@ -1,10 +1,10 @@
 [core]
-        whitespace = -trailing-space
+  whitespace = -trailing-space
 	excludesfile = /Users/stephen/.gitignore_global
 [help]
-        autocorrect = 1
+  autocorrect = 1
 [github]
-	user = smcabrera
+	user = scabrera-ut
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
@@ -12,8 +12,16 @@
 	required = true
 [user]
 	name = Stephen Mariano Cabrera
-	email = stephen@userinterviews.com
+	email = scabrera@usertesting.com
+  signingkey = ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC6j8drOLTKe3W6XFbCRHwe7Sng60vzKM8iTryzkqhaCnFoEkb5qPgClhljKd+3sg/fHRd3Ekh88kGoQy0LaKl//i9hqgyBjNPxmay31p6/cznop302kuh6pSMMLM8vmcP4J2or1OKrZnMp2/kQKchuT3mt63aKBISeo1e/kQBh+RnW3+YKd0s8PlizvHJNNI+tXt/XHxhEjUnLucoCZBerHLJgf2/URPohs/7T39LO3lr2I1iwzsSY0KfaD8L9JvRJioS8W7q+/gpko/Azn1UD4VY2yPd/OvUyb4zUJYoRosdBrHHuLLpw4sG/4HbCPgAS0PeZoF4cKYi1d/3E/f4993GTSfUH0zGmra6XalK3NXK4Gd2fsSNB+7gjRqKpBs2OVTDHwaHizala/Si7Hv0sj/SbCAMpP7UnA77NXt0cmh7QFPjgSgYNUa+iw9EuZdzlxjrmNLdk5Z2JWR8OAWoh5kK1kZ087G5XgteY8JHYZAWLtVmdgzmx9tuPSopRZnypZ8YMm/mV+vWsvYaLLP/4trI8jGznbshWzprTjwnz6D7NGgfjQ0x0//wcxRwTKG1GbKMN4WjnI4G9AB9cdtBpCi+DDicFkwbvWWYCCbC9Han7/w1xKnnOrQLvKvqhYhHmDHEpyM+QltNrDy8dXylBbNi75KBlfSMUFZ7nW2I44Q==
 [init]
 	defaultBranch = main
 [url "git@github.com:"]
 	insteadOf = https://github.com/
+[gpg]
+  format = ssh
+[gpg "ssh"]
+  program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
+[commit]
+  gpgsign = true
+
