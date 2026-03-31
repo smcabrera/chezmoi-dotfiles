@@ -79,7 +79,8 @@
       "Bash(find *)",
       "Bash(jira *)",
       "Bash(jira issue list -a$(jira me) *)",
-      "Bash(gh *)"
+      "Bash(gh *)",
+      "Bash(psql*)"
     ],
     "deny": [
       "Bash(git push --force *)",
