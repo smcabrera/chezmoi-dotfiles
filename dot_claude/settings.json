@@ -1,4 +1,47 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(git *)",
+      "Bash(npm *)",
+      "Bash(npx *)",
+      "Bash(node *)",
+      "Bash(ruby *)",
+      "Bash(bundle *)",
+      "Bash(rspec *)",
+      "Bash(pytest *)",
+      "Bash(python *)",
+      "Bash(brew *)",
+      "Bash(ls *)",
+      "Bash(cat *)",
+      "Bash(grep *)",
+      "Bash(find *)",
+      "Bash(jira *)",
+      "Bash(jira issue list -a$(jira me) *)",
+      "Bash(gh *)",
+      "Bash(openspec *)",
+      "Bash(psql*)",
+      "Bash(ELASTICSEARCH_URL= bundle exec rspec*)",
+      "Write(/Users/stephen/Pictures/*)",
+      "WebSearch",
+      "Write(path:/Users/stephen/Brain/notes/*)",
+      "Edit(path:/Users/stephen/Brain/notes/*)",
+      "Skill(skill:note-taker)",
+      "Read(path:/Users/stephen/Brain/notes/*)",
+      "Read(path:/Users/stephen/Code/dope-ai/*)",
+      "Write(path:/Users/stephen/Code/dope-ai/*)",
+      "Edit(path:/Users/stephen/Code/dope-ai/*)",
+      "Read",
+      "Bash(mkdir *)"
+    ],
+    "deny": [
+      "Bash(git push --force *)",
+      "Bash(rm -rf *)",
+      "Bash(sudo *)",
+      "Bash(chmod 777 *)",
+      "Bash(curl * | bash *)",
+      "Bash(git reset --hard *)"
+    ]
+  },
   "hooks": {
     "SessionStart": [
       {
@@ -58,37 +101,10 @@
     "claude-code-setup@claude-plugins-official": true,
     "slack@claude-plugins-official": true
   },
-  "trustedDirectories": ["/Users/stephen"],
   "effortLevel": "medium",
   "skipDangerousModePermissionPrompt": true,
-  "permissions": {
-    "allow": [
-      "Bash(git *)",
-      "Bash(npm *)",
-      "Bash(npx *)",
-      "Bash(node *)",
-      "Bash(ruby *)",
-      "Bash(bundle *)",
-      "Bash(rspec *)",
-      "Bash(pytest *)",
-      "Bash(python *)",
-      "Bash(brew *)",
-      "Bash(ls *)",
-      "Bash(cat *)",
-      "Bash(grep *)",
-      "Bash(find *)",
-      "Bash(jira *)",
-      "Bash(jira issue list -a$(jira me) *)",
-      "Bash(gh *)",
-      "Bash(psql*)"
-    ],
-    "deny": [
-      "Bash(git push --force *)",
-      "Bash(rm -rf *)",
-      "Bash(sudo *)",
-      "Bash(chmod 777 *)",
-      "Bash(curl * | bash *)",
-      "Bash(git reset --hard *)"
-    ]
-  }
+  "trustedDirectories": [
+    "/Users/stephen"
+  ],
+  "model": "opus[1m]"
 }
