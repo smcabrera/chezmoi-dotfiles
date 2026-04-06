@@ -40,3 +40,5 @@ CLAUDE.local.md
 .cursor/plans
 .cursor/features
 my_bin/
+.agent_feedback
+.git-hooks/pre_commit/
