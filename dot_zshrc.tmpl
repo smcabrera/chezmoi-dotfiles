@@ -59,7 +59,9 @@ HEROKU_AC_ZSH_SETUP_PATH="$HOME/Library/Caches/heroku/autocomplete/zsh_setup"
 
 # This goes last because install tools always append these
 export PATH="$HOME/.bin:$HOME/bin:$HOME/.cargo/bin:$HOME/go/bin:$HOME/Dropbox/bin:$HOME/.rbenv/bin:$PATH"
+{{ if eq .chezmoi.os "darwin" -}}
 export PATH="/opt/homebrew/opt/libpq/bin:/opt/homebrew/opt/openjdk/bin:/opt/homebrew/bin:$PATH"
+{{ end -}}
 export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
 export VOLTA_HOME="$HOME/.volta"
 export PATH="$VOLTA_HOME/bin:$PATH"
@@ -72,7 +74,9 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
+{{ if eq .chezmoi.os "darwin" -}}
 eval "$(/opt/homebrew/bin/brew shellenv)"
+{{ end -}}
 eval "$(rbenv init - zsh)"
 eval "$(mcfly init zsh)"
 

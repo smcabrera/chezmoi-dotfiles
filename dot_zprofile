@@ -6,4 +6,4 @@
 export PATH="$PATH:/Users/stephen/Library/Application Support/JetBrains/Toolbox/scripts"
 
 
-eval "$(/opt/homebrew/bin/brew shellenv)"
+[[ "$(uname)" == "Darwin" ]] && eval "$(/opt/homebrew/bin/brew shellenv)"
