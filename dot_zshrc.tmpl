@@ -1,4 +1,4 @@
-eval "$(~/.local/bin/agent shell-integration zsh)"
+[[ -x "$HOME/.local/bin/agent" ]] && eval "$(~/.local/bin/agent shell-integration zsh)"
 # -----------------------
 # General Config
 # -----------------------
@@ -77,11 +77,11 @@ export NVM_DIR="$HOME/.nvm"
 {{ if eq .chezmoi.os "darwin" -}}
 eval "$(/opt/homebrew/bin/brew shellenv)"
 {{ end -}}
-eval "$(rbenv init - zsh)"
-eval "$(mcfly init zsh)"
+(( $+commands[rbenv] )) && eval "$(rbenv init - zsh)"
+(( $+commands[mcfly] )) && eval "$(mcfly init zsh)"
 
 export PATH="$HOME/.local/bin:$PATH"
-source <(tree-me shellenv)
+(( $+commands[tree-me] )) && source <(tree-me shellenv)
 
 wt() {
   if [[ "$1" == "ls" ]]; then
